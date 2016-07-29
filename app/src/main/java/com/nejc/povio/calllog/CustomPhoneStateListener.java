@@ -22,8 +22,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
                 Toast.makeText(context, "Phone call has ended", Toast.LENGTH_SHORT).show();
                 Toast.makeText(context, "Starting CallLog", Toast.LENGTH_SHORT).show();
-                // The process to transfer to the next application.
-                Intent intent = new Intent(context, MainActivity.class);
+                Intent intent = new Intent(context, AddCallActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 break;

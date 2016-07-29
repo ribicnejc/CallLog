@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -19,17 +20,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         private View.OnClickListener clickListener;
 
-        TextView backGroundTemp;
-        ImageView weatherPhoto;
+        TextView phoneNumber;
+        TextView date;
+        TextView duration;
+        TextView type;
+        ImageView icon;
         public Typeface typeface;
 
         InfoViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            //weatherPhoto = (ImageView) itemView.findViewById(R.id.weatherIcon);
-            //backGroundTemp = (TextView) itemView.findViewById(R.id.card_view_background_temp);
-            typeface = Typeface.createFromAsset(itemView.getContext().getAssets(), "openSansLight.ttf");
-        }
+            phoneNumber = (TextView) itemView.findViewById(R.id.call_card_number);
+            date = (TextView) itemView.findViewById(R.id.call_card_date);
+            duration = (TextView) itemView.findViewById(R.id.call_card_duration);
+            type = (TextView) itemView.findViewById(R.id.call_card_type);
+            icon = (ImageView) itemView.findViewById(R.id.call_card_icon);
+           }
 
         public void setClickListener(View.OnClickListener itemClickListener) {
             this.clickListener = itemClickListener;
@@ -61,8 +67,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(InfoViewHolder weatherViewHolder, final int i) {
-
+    public void onBindViewHolder(InfoViewHolder viewHolder, final int i) {
+        viewHolder.type.setText(datas.get(i).call);
+        viewHolder.duration.setText("Duration: "+datas.get(i).duration);
+        viewHolder.date.setText(datas.get(i).date);
+        viewHolder.icon.setImageResource(datas.get(i).icon);
+        viewHolder.phoneNumber.setText(datas.get(i).phoneNumber);
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Hello", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

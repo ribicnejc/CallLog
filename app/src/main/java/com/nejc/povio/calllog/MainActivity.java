@@ -2,10 +2,12 @@ package com.nejc.povio.calllog;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.CallLog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,10 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,8 +103,9 @@ public class MainActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+
+                    startActivity(new Intent(getBaseContext(), ChooseCall.class));
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
                 }
             });
     }
@@ -109,9 +114,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        TextView textView = (TextView) findViewById(R.id.readLog);
-        if (textView != null)
-            textView.setText(getCallDetails(this));
         return true;
     }
 
@@ -130,65 +132,29 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static String getCallDetails(Context context) {
-        StringBuffer stringBuffer = new StringBuffer();
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.READ_CALL_LOG)
-                == PackageManager.PERMISSION_GRANTED) {
 
-
-            Cursor cursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
-                    null, null, null, CallLog.Calls.DATE + " DESC");
-            int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
-            int type = cursor.getColumnIndex(CallLog.Calls.TYPE);
-            int date = cursor.getColumnIndex(CallLog.Calls.DATE);
-            int duration = cursor.getColumnIndex(CallLog.Calls.DURATION);
-            while (cursor.moveToNext()) {
-                String phNumber = cursor.getString(number);
-                String callType = cursor.getString(type);
-                String callDate = cursor.getString(date);
-                Date callDayTime = new Date(Long.valueOf(callDate));
-                String callDuration = cursor.getString(duration);
-                String dir = null;
-                int dircode = Integer.parseInt(callType);
-                switch (dircode) {
-                    case CallLog.Calls.OUTGOING_TYPE:
-                        dir = "OUTGOING";
-                        break;
-                    case CallLog.Calls.INCOMING_TYPE:
-                        dir = "INCOMING";
-                        break;
-
-                    case CallLog.Calls.MISSED_TYPE:
-                        dir = "MISSED";
-                        break;
-                }
-                stringBuffer.append("\nPhone Number:--- " + phNumber + " \nCall Type:--- "
-                        + dir + " \nCall Date:--- " + callDayTime
-                        + " \nCall duration in sec :--- " + callDuration);
-                stringBuffer.append("\n----------------------------------");
-            }
-            cursor.close();
-        }
-        return stringBuffer.toString();
+    public static void addCity(int icon, String call, String phoneNumber, String date, String duration) {
+        datas = readState();
+        datas.add(0, new Data(icon, call, phoneNumber, date, duration));
+        saveState(datas);
     }
 
     public static void saveState(List<Data> objects) {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("/storage/emulated/0/savedData.ser"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("/storage/emulated/0/callData.ser"));
             ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
             outputStream.writeObject(objects);
             outputStream.close();
             fileOutputStream.close();
         } catch (Exception e) {
-            // save log
+            Log.d("","");
         }
 
 
     }
 
-    public List<Data> readState() {
-        boolean check = new File("/storage/emulated/0/callLogData.ser").exists();
+    public static List<Data> readState() {
+        boolean check = new File("/storage/emulated/0/callData.ser").exists();
         List<Data> list = new ArrayList<>();
         if (check) {
             list = readData();
@@ -196,10 +162,10 @@ public class MainActivity extends AppCompatActivity {
         return list;
     }
 
-    public List<Data> readData() {
+    public static List<Data> readData() {
         List<Data> list;
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File("/storage/emulated/0/callLogData.ser"));
+            FileInputStream fileInputStream = new FileInputStream(new File("/storage/emulated/0/callData.ser"));
             ObjectInputStream in = new ObjectInputStream(fileInputStream);
             list = (ArrayList) in.readObject();
 
@@ -208,5 +174,28 @@ public class MainActivity extends AppCompatActivity {
             list = new ArrayList<>();
         }
         return list;
+    }
+    boolean doubleBackToExitPressedOnce = false;
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            Log.d("CDA", "onBackPressed Called");
+            Intent setIntent = new Intent(Intent.ACTION_MAIN);
+            setIntent.addCategory(Intent.CATEGORY_HOME);
+            setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(setIntent);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 }
