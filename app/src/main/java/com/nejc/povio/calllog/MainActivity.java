@@ -103,6 +103,17 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         datas = readState();
+
+        if (datas.size() == 0) {
+            TextView textView = (TextView) findViewById(R.id.emtpy);
+            if (textView != null)
+                textView.setVisibility(View.VISIBLE);
+        } else {
+            TextView textView = (TextView) findViewById(R.id.emtpy);
+            if (textView != null)
+                textView.setVisibility(View.GONE);
+        }
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -159,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             outputStream.close();
             fileOutputStream.close();
         } catch (Exception e) {
-            Log.d("","");
+            Log.d("", "");
         }
 
 
@@ -187,7 +198,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return list;
     }
+
     boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
