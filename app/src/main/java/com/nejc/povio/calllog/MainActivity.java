@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
             int hasWritePermission = checkSelfPermission(Manifest.permission.WRITE_CALL_LOG);
             int hasReadPermission = checkSelfPermission(Manifest.permission.READ_CALL_LOG);
+            int hasWritePermission1 = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int hasReadPermission1 = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+
 
             List<String> permissions = new ArrayList<String>();
             if (hasWritePermission != PackageManager.PERMISSION_GRANTED) {
@@ -52,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
             if (hasReadPermission != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.READ_CALL_LOG);
+
+            }
+            if (hasWritePermission1 != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            }
+
+            if (hasReadPermission1 != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
 
             }
             if (!permissions.isEmpty()) {
